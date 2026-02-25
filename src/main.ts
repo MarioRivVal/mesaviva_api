@@ -2,10 +2,13 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
-import { globalPipesConfig } from './shared/infrastructure/config/pipes.config';
+import { globalPipesConfig } from '@shared/infrastructure/config/pipes.config';
+import { DomainExceptionFilter } from '@shared/infrastructure/filters/domain-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.useGlobalFilters(new DomainExceptionFilter());
 
   app.use(helmet());
   app.use(cookieParser());

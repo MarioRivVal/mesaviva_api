@@ -1,5 +1,21 @@
-export interface WelcomeAdminParams {
+type BaseEmailParams = {
   to: string;
+};
+
+type CustomerInfo = {
+  customerName: string;
+  customerLastName: string;
+};
+
+type ReservationInfo = {
+  restaurantName: string;
+  date: string;
+  time: string;
+  numberOfPeople: number;
+  notes?: string;
+};
+
+export type WelcomeAdminParams = BaseEmailParams & {
   firstName: string;
   lastName: string;
   restaurantName: string;
@@ -8,42 +24,25 @@ export interface WelcomeAdminParams {
   restaurantPhone: string;
   restaurantEmail: string;
   tempPassword: string;
-}
+};
 
-export interface ReservationAcceptedParams {
-  to: string;
-  customerName: string;
-  customerLastName: string;
-  restaurantName: string;
-  date: string;
-  time: string;
-  numberOfPeople: number;
-  notes?: string;
-}
+export type ReservationAcceptedParams = BaseEmailParams &
+  CustomerInfo &
+  ReservationInfo;
 
-export interface ReservationRejectedParams {
-  to: string;
-  customerName: string;
-  customerLastName: string;
-  date: string;
-  time: string;
-  numberOfPeople: number;
-  rejectionReason?: string;
-}
+export type ReservationRejectedParams = BaseEmailParams &
+  CustomerInfo &
+  ReservationInfo & {
+    rejectionReason?: string;
+  };
 
-export interface NewReservationAdminParams {
-  to: string;
-  restaurantName: string;
-  customerName: string;
-  customerLastName: string;
-  customerEmail: string;
-  customerPhone: string;
-  date: string;
-  time: string;
-  numberOfPeople: number;
-  isAutoConfirmed: boolean;
-  notes?: string;
-}
+export type NewReservationAdminParams = BaseEmailParams &
+  CustomerInfo &
+  ReservationInfo & {
+    customerEmail: string;
+    customerPhone: string;
+    isAutoConfirmed: boolean;
+  };
 
 export abstract class EmailServicePort {
   abstract sendWelcomeToNewAdmin(params: WelcomeAdminParams): Promise<void>;

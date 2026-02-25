@@ -1,19 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepositoryPort } from '../../domain/ports/user.repository.port';
 import { RestaurantRepositoryPort } from '../../../restaurants/domain/ports/restaurant.repository.port';
-import {
-  CreateRestaurantAdminInput,
-  CreateRestaurantAdminResult,
-} from '../dtos/create-restaurant-admin.dto';
-import { User } from '../../domain/entities/user.entity';
-import { Restaurant } from '../../../restaurants/domain/entities/restaurant.entity';
-import { UserRole } from '../../domain/enums/user-role.enum';
-import { PasswordHasherPort } from '../../../../shared/domain/ports/password-hasher.port';
+import { CreateRestaurantAdminInput, CreateRestaurantAdminResult, } from '../dtos/create-restaurant-admin.dto';
+import { User } from '@modules/users/domain/entities/user.entity';
+import { Restaurant } from '@modules/restaurants/domain/entities/restaurant.entity';
+import { UserRole } from '@modules/users/domain/enums/user-role.enum';
+import { PasswordHasherPort } from '@shared/domain/ports/password-hasher.port';
 
-import { EmailServicePort } from '../../../notifications/application/ports/email.service.port';
-import { ConflictError } from '../../../../shared/domain/errors/conflict.error';
-import { generateTemporaryPassword } from '../../../../shared/domain/utils/password-generator.utils';
-import { generateSlug } from '../../../../shared/domain/utils/generate-slug.utils';
+import { EmailServicePort } from '@modules/notifications/application/ports/email.service.port';
+import { ConflictError } from '@shared/domain/errors/domain.error';
+import { generateTemporaryPassword } from '@shared/domain/utils/password-generator.utils';
+import { generateSlug } from '@shared/domain/utils/generate-slug.utils';
 
 @Injectable()
 export class CreateRestaurantAdminUseCase {

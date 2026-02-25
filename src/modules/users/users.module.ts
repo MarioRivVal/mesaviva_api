@@ -6,7 +6,7 @@ import { UserTypeOrmRepository } from './infrastructure/persistence/user.typeorm
 import { CreateRestaurantAdminUseCase } from './application/use-cases/create-restaurant-admin.use-case';
 import { UsersController } from './infrastructure/controllers/users.controller';
 import { NotificationsModule } from '../notifications/notifications.module';
-import { SharedModule } from '../../shared/shared.module';
+import { SharedModule } from '@shared/shared.module';
 import { RestaurantsModule } from '../restaurants/restaurants.module';
 
 @Module({

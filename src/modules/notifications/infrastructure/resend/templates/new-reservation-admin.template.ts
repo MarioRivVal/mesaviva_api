@@ -1,4 +1,4 @@
-import { NewReservationAdminParams } from '../../../application/ports/email.service.port';
+import { NewReservationAdminParams } from '@modules/notifications/application/ports/email.service.port';
 
 export function getNewReservationAdminTemplate(
   params: NewReservationAdminParams,

@@ -7,7 +7,7 @@ import {
   ReservationAcceptedParams,
   ReservationRejectedParams,
   WelcomeAdminParams,
-} from '../../application/ports/email.service.port';
+} from '@modules/notifications/application/ports/email.service.port';
 import { getWelcomeAdminTemplate } from './templates/welcome-admin.template';
 import { getReservationAcceptedTemplate } from './templates/reservation-accepted.template';
 import { getReservationRejectedTemplate } from './templates/reservation-rejected.template';

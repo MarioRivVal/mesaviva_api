@@ -7,11 +7,11 @@ import {
   Matches,
   MinLength,
 } from 'class-validator';
-import { RestaurantCategory } from '../../../../restaurants/domain/enums/restaurant-category.enum';
+import { RestaurantCategory } from '@modules/restaurants/domain/enums/restaurant-category.enum';
 import {
-  PHONE_SPAIN_PATTERN,
   PHONE_SPAIN_MESSAGE,
-} from '../../../../../shared/domain/constants/validation.constants';
+  PHONE_SPAIN_PATTERN,
+} from '@shared/domain/constants/validation.constants';
 
 export class CreateRestaurantAdminHttpDto {
   @IsEmail()
