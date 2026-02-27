@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepositoryPort } from '../../domain/ports/user.repository.port';
 import { RestaurantRepositoryPort } from '../../../restaurants/domain/ports/restaurant.repository.port';
-import { CreateRestaurantAdminInput, CreateRestaurantAdminResult, } from '../dtos/create-restaurant-admin.dto';
+import {
+  CreateRestaurantAdminInput,
+  CreateRestaurantAdminResult,
+} from '../dtos/create-restaurant-admin.dto';
 import { User } from '@modules/users/domain/entities/user.entity';
 import { Restaurant } from '@modules/restaurants/domain/entities/restaurant.entity';
 import { UserRole } from '@modules/users/domain/enums/user-role.enum';
@@ -38,30 +41,30 @@ export class CreateRestaurantAdminUseCase {
       slug = `${slug}-${Date.now()}`;
     }
 
-    const user = new User(
-      crypto.randomUUID(),
-      input.firstName,
-      input.lastName,
-      input.phone,
-      input.email,
+    const user = User.create({
+      id: crypto.randomUUID(),
+      firstName: input.firstName,
+      lastName: input.lastName,
+      phone: input.phone,
+      email: input.email,
       passwordHash,
-      UserRole.RESTAURANT_ADMIN,
-      true,
-      true,
-    );
+      role: UserRole.RESTAURANT_ADMIN,
+      mustChangePassword: true,
+      isActive: true,
+    });
 
-    const restaurant = new Restaurant(
-      crypto.randomUUID(),
-      input.restaurantName,
-      user.id,
-      input.restaurantPhone,
-      input.restaurantAddress,
-      input.restaurantCategory,
-      input.restaurantEmail,
+    const restaurant = Restaurant.create({
+      id: crypto.randomUUID(),
+      name: input.restaurantName,
+      adminId: user.id,
+      phone: input.restaurantPhone,
+      address: input.restaurantAddress,
+      category: input.restaurantCategory,
+      email: input.restaurantEmail,
+      imageUrl: input.restaurantImageUrl,
       slug,
-      input.restaurantImageUrl,
-      true,
-    );
+      isActive: true,
+    });
 
     const savedUser = await this.userRepository.save(user);
 

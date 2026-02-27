@@ -24,5 +24,6 @@ import { RestaurantsModule } from '../restaurants/restaurants.module';
     CreateRestaurantAdminUseCase,
   ],
   controllers: [UsersController],
+  exports: [UserRepositoryPort],
 })
 export class UsersModule {}

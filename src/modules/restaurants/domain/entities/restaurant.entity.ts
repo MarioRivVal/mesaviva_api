@@ -16,6 +16,32 @@ export class Restaurant {
     public readonly updatedAt?: Date,
   ) {}
 
+  static create(params: {
+    id: string;
+    name: string;
+    adminId: string;
+    phone: string;
+    address: string;
+    category: RestaurantCategory;
+    email: string;
+    imageUrl: string;
+    slug: string;
+    isActive: boolean;
+  }): Restaurant {
+    return new Restaurant(
+      params.id,
+      params.name,
+      params.adminId,
+      params.phone,
+      params.address,
+      params.category,
+      params.email,
+      params.imageUrl,
+      params.slug,
+      params.isActive,
+    );
+  }
+
   toggleIsActive(): void {
     this.isActive = !this.isActive;
   }

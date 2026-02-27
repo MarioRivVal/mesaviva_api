@@ -19,6 +19,30 @@ export class User {
     return `${this.firstName} ${this.lastName}`;
   }
 
+  static create(params: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    email: string;
+    passwordHash: string;
+    role: UserRole;
+    mustChangePassword: boolean;
+    isActive: boolean;
+  }): User {
+    return new User(
+      params.id,
+      params.firstName,
+      params.lastName,
+      params.phone,
+      params.email,
+      params.passwordHash,
+      params.role,
+      params.mustChangePassword,
+      params.isActive,
+    );
+  }
+
   toggleIsActive(): void {
     this.isActive = !this.isActive;
   }

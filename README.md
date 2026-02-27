@@ -1,98 +1,144 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# MesaViva API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Backend de la plataforma **MesaViva** — sistema de gestión de reservas para restaurantes del mercado europeo, orientado
+inicialmente al mercado español.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Construido con **NestJS**, **TypeScript** y **PostgreSQL** siguiendo los principios de **Arquitectura Hexagonal**.
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Índice de documentación
 
-## Project setup
+| Documento                                           | Descripción                                |
+|-----------------------------------------------------|--------------------------------------------|
+| [Getting Started](./docs/01-getting-started.md)     | Requisitos, instalación y arranque local   |
+| [Arquitectura](./docs/02-architecture.md)           | Decisiones técnicas, estructura y patrones |
+| [Base de datos](./docs/03-database.md)              | Entidades, relaciones y esquema            |
+| [API — Auth](./docs/04-api/auth.md)                 | Endpoints de autenticación                 |
+| [API — Users](./docs/04-api/users.md)               | Endpoints de gestión de usuarios           |
+| [API — Restaurants](./docs/04-api/restaurants.md)   | Endpoints de restaurantes                  |
+| [API — Settings](./docs/04-api/settings.md)         | Endpoints de configuración                 |
+| [API — Reservations](./docs/04-api/reservations.md) | Endpoints de reservas                      |
+| [Módulo Shared](./docs/05-modules/shared.md)        | Infraestructura compartida                 |
+| [Despliegue](./docs/06-deployment.md)               | Producción, variables de entorno y Docker  |
 
-```bash
-$ npm install
+---
+
+## Stack tecnológico
+
+### Backend
+
+| Tecnología   | Versión | Uso                    |
+|--------------|---------|------------------------|
+| Node.js      | 24.x    | Runtime                |
+| NestJS       | 11.x    | Framework              |
+| TypeScript   | 5.x     | Lenguaje               |
+| TypeORM      | 0.3.x   | ORM                    |
+| PostgreSQL   | 16.x    | Base de datos          |
+| Passport JWT | 4.x     | Autenticación          |
+| Resend       | 4.x     | Emails transaccionales |
+| Stripe       | —       | Pagos (H3)             |
+| Cloudinary   | 2.x     | Gestión de imágenes    |
+
+### Infraestructura
+
+| Tecnología        | Uso                      |
+|-------------------|--------------------------|
+| Docker / OrbStack | Entorno de desarrollo    |
+| Coolify           | Despliegue en producción |
+| Hetzner VPS       | Servidor de producción   |
+
+---
+
+## Arquitectura
+
+El proyecto implementa **Arquitectura Hexagonal** (Ports & Adapters) organizada por módulos de negocio:
+
+```plaintext
+src/
+├── modules/
+│   ├── auth/            # Autenticación y JWT
+│   ├── users/           # Gestión de administradores
+│   ├── restaurants/     # Gestión de restaurantes
+│   ├── settings/        # Configuración operativa
+│   ├── reservations/    # Gestión de reservas
+│   ├── payments/        # Pagos con Stripe (H3)
+│   └── notifications/   # Emails transaccionales
+└── shared/              # Infraestructura compartida
 ```
 
-## Compile and run the project
+Cada módulo sigue la estructura:
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```plaintext
+módulo/
+├── domain/ # Lógica pura — sin dependencias de framework 
+├── application/ # Casos de uso — orquesta el dominio 
+└── infrastructure/# Controllers, ORM, servicios externos
 ```
 
-## Run tests
+---
+
+## Roles del sistema
+
+| Rol                | Descripción                          |
+|--------------------|--------------------------------------|
+| `SUPERADMIN`       | Gestión completa de la plataforma    |
+| `RESTAURANT_ADMIN` | Gestión de su restaurante y reservas |
+| Guest              | Realiza reservas sin registro        |
+
+---
+
+## Estado del proyecto
+
+| Hito | Estado | Descripción                                     |
+|------|--------|-------------------------------------------------|
+| H0   | ✅      | Anteproyecto y arquitectura base                |
+| H1   | 🚧     | MVP — reserva pública + configuración operativa |
+| H2   | ⏳      | Panel de gestión + emails + pruebas             |
+| H3   | ⏳      | Depósito configurable con Stripe                |
+
+---
+
+## Arranque rápido
 
 ```bash
-# unit tests
-$ npm run test
+# 1. Clonar el repositorio
+git clone https://github.com/tu-usuario/mesaviva.git
+cd mesaviva/api
 
-# e2e tests
-$ npm run test:e2e
+# 2. Instalar dependencias
+npm install
 
-# test coverage
-$ npm run test:cov
+# 3. Configurar variables de entorno
+cp .env.example .env
+
+# 4. Levantar base de datos
+docker-compose up -d
+
+# 5. Ejecutar seeds
+npm run seed
+
+# 6. Arrancar en desarrollo
+npm run start:dev
+
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Consulta [Getting Started](./docs/01-getting-started.md)  para la guía completa.
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm run start:dev   # Arrancar en modo desarrollo
+npm run build       # Compilar para producción
+npm run start:prod  # Arrancar en modo producción
+npm run seed        # Poblar BD con datos iniciales
+npm run lint        # Ejecutar linter
+npm run test        # Ejecutar tests unitarios
+npm run test:e2e    # Ejecutar tests end-to-end
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Autor
 
-## Resources
+### Mario Rivera Valverde
 
-Check out a few resources that may come in handy when working with NestJS:
+### DAM · The Power Education · 2024/2026
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### Tutora: Olga Moreno Martín
