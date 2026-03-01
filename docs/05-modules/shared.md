@@ -105,7 +105,7 @@ throw new NotFoundError('Restaurant', id);
 
 | Error               | HTTP | Uso                        |
 |---------------------|------|----------------------------|
-| `DomainError`       | —    | Clase base abstracta       |
+| `DomainErrors`      | —    | Clase base abstracta       |
 | `ConflictError`     | 409  | Recurso ya existe          |
 | `NotFoundError`     | 404  | Recurso no encontrado      |
 | `BadRequestError`   | 400  | Datos inválidos de negocio |

@@ -249,19 +249,19 @@ Los use cases lanzan errores de dominio (sin dependencia de NestJS):
 
 ```typescript
 // shared/domain/errors/domain.errors.ts
-export class ConflictError extends DomainError {
+export class ConflictError extends DomainErrors {
 }
 
-export class NotFoundError extends DomainError {
+export class NotFoundError extends DomainErrors {
 }
 
-export class BadRequestError extends DomainError {
+export class BadRequestError extends DomainErrors {
 }
 
-export class UnauthorizedError extends DomainError {
+export class UnauthorizedError extends DomainErrors {
 }
 
-export class ForbiddenError extends DomainError {
+export class ForbiddenError extends DomainErrors {
 }
 ```
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UnauthorizedError } from '@shared/domain/errors/domain.error';
+import { UnauthorizedError } from '@shared/domain/errors/domain.errors';
 import { UserRepositoryPort } from '@modules/users/domain/ports/user.repository.port';
 import { User } from '@modules/users/domain/entities/user.entity';
 import { PasswordHasherPort } from '@shared/domain/ports/password-hasher.port';

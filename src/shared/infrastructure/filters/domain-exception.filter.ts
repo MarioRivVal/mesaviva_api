@@ -13,7 +13,7 @@ import {
   ForbiddenError,
   NotFoundError,
   UnauthorizedError,
-} from '@shared/domain/errors/domain.error';
+} from '@shared/domain/errors/domain.errors';
 
 @Catch()
 export class DomainExceptionFilter implements ExceptionFilter {

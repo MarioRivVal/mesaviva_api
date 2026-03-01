@@ -11,7 +11,7 @@ import { UserRole } from '@modules/users/domain/enums/user-role.enum';
 import { PasswordHasherPort } from '@shared/domain/ports/password-hasher.port';
 
 import { EmailServicePort } from '@modules/notifications/application/ports/email.service.port';
-import { ConflictError } from '@shared/domain/errors/domain.error';
+import { ConflictError } from '@shared/domain/errors/domain.errors';
 import { generateTemporaryPassword } from '@shared/domain/utils/password-generator.utils';
 import { generateSlug } from '@shared/domain/utils/generate-slug.utils';
 
