@@ -31,7 +31,7 @@ export class SettingsTypeOrmRepository extends SettingsRepositoryPort {
       entity.restaurantId,
       entity.openingHours,
       entity.timeSlotInterval,
-      entity.depositAmount,
+      Number(entity.depositAmount),
       entity.acceptanceMode,
       entity.createdAt,
       entity.updatedAt,

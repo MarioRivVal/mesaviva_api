@@ -109,69 +109,136 @@ Un admin puede gestionar múltiples restaurantes.
 
 ---
 
-### `settings` *(próximamente — H1)*
+### `settings`
 
 Configuración operativa de cada restaurante.
 
-| Columna           | Tipo          | Descripción                          |
-|-------------------|---------------|--------------------------------------|
-| `id`              | `uuid`        | PK                                   |
-| `restaurantId`    | `uuid`        | FK lógica hacia `restaurants`        |
-| `dayOfWeek`       | `smallint`    | 0 = lunes … 6 = domingo              |
-| `openTime`        | `time`        | Hora de apertura del turno           |
-| `closeTime`       | `time`        | Hora de cierre del turno             |
-| `maxCapacity`     | `smallint`    | Comensales máximos por turno         |
-| `intervalMinutes` | `smallint`    | Intervalo de reservas (15/30/60 min) |
-| `acceptanceMode`  | `enum`        | `AUTO` \| `MANUAL`                   |
-| `depositRequired` | `boolean`     | Requiere depósito al reservar        |
-| `depositAmount`   | `decimal`     | Importe del depósito en euros        |
-| `isActive`        | `boolean`     | Turno activo/inactivo                |
-| `createdAt`       | `timestamptz` | AUTO                                 |
-| `updatedAt`       | `timestamptz` | AUTO                                 |
+| Columna            | Tipo          | Restricciones    | Descripción                                     |
+|--------------------|---------------|------------------|-------------------------------------------------|
+| `id`               | `uuid`        | PK               | Identificador único                             |
+| `restaurantId`     | `uuid`        | NOT NULL, UNIQUE | FK lógica hacia `restaurants` (1 a 1)           |
+| `openingHours`     | `jsonb`       | NOT NULL         | Horarios por día y turno (ver estructura abajo) |
+| `timeSlotInterval` | `smallint`    | NOT NULL         | Intervalo de reservas: `15`, `30` o `60` min    |
+| `depositAmount`    | `decimal`     | DEFAULT 0        | Importe del depósito en euros                   |
+| `acceptanceMode`   | `enum`        | DEFAULT AUTO     | `AUTO` \| `MANUAL`                              |
+| `createdAt`        | `timestamptz` | AUTO             | Fecha de creación                               |
+| `updatedAt`        | `timestamptz` | AUTO             | Fecha de última modificación                    |
+
+**Estructura del campo `openingHours` (JSONB):**
+
+```json
+{
+  "monday": [],
+  "tuesday": [],
+  "wednesday": [
+    {
+      "open": "13:00",
+      "close": "16:00",
+      "capacity": 40
+    }
+  ],
+  "thursday": [
+    {
+      "open": "13:00",
+      "close": "16:00",
+      "capacity": 40
+    }
+  ],
+  "friday": [
+    {
+      "open": "13:00",
+      "close": "16:00",
+      "capacity": 40
+    },
+    {
+      "open": "20:00",
+      "close": "23:00",
+      "capacity": 50
+    }
+  ],
+  "saturday": [
+    {
+      "open": "13:00",
+      "close": "16:30",
+      "capacity": 50
+    }
+  ],
+  "sunday": [
+    {
+      "open": "13:00",
+      "close": "16:30",
+      "capacity": 50
+    }
+  ]
+}
+```
+
+> Un array vacío para un día indica que el restaurante está cerrado ese día.
+> El uso de JSONB permite múltiples turnos por día (comida + cena) sin tablas adicionales.
+
+**Notas:**
+
+- `restaurantId` tiene restricción UNIQUE — un restaurante tiene exactamente una configuración
+- `depositAmount` se almacena como `decimal` pero TypeORM lo devuelve como `string` en PostgreSQL.
+  El repositorio hace el cast a `number` en `toDomain()` para evitar bugs aritméticos silenciosos
 
 ---
 
-### `reservations` *(próximamente — H1)*
+### `reservations`
 
 Reservas realizadas por comensales. No requieren cuenta de usuario.
 
-| Columna             | Tipo          | Descripción                         |
-|---------------------|---------------|-------------------------------------|
-| `id`                | `uuid`        | PK                                  |
-| `restaurantId`      | `uuid`        | FK lógica hacia `restaurants`       |
-| `customerName`      | `varchar`     | Nombre del comensal                 |
-| `customerLastName`  | `varchar`     | Apellidos del comensal              |
-| `customerEmail`     | `varchar`     | Email para notificaciones           |
-| `customerPhone`     | `varchar`     | Teléfono de contacto                |
-| `date`              | `date`        | Fecha de la reserva                 |
-| `time`              | `time`        | Hora de la reserva                  |
-| `numberOfPeople`    | `smallint`    | Número de comensales                |
-| `status`            | `enum`        | Estado de la reserva                |
-| `notes`             | `text`        | Notas adicionales del comensal      |
-| `rejectionReason`   | `text`        | Motivo de rechazo (si aplica)       |
-| `cancellationToken` | `uuid`        | Token único para cancelar sin login |
-| `paymentStatus`     | `enum`        | Estado del pago (si hay depósito)   |
-| `paymentIntentId`   | `varchar`     | ID de Stripe (si hay depósito)      |
-| `createdAt`         | `timestamptz` | AUTO                                |
-| `updatedAt`         | `timestamptz` | AUTO                                |
+| Columna             | Tipo          | Restricciones    | Descripción                                 |
+|---------------------|---------------|------------------|---------------------------------------------|
+| `id`                | `uuid`        | PK               | Identificador único                         |
+| `restaurantId`      | `uuid`        | NOT NULL         | FK lógica hacia `restaurants`               |
+| `date`              | `date`        | NOT NULL         | Fecha de la reserva (`YYYY-MM-DD`)          |
+| `time`              | `varchar`     | NOT NULL         | Hora de la reserva (`HH:mm`)                |
+| `numberOfPeople`    | `integer`     | NOT NULL         | Número de comensales                        |
+| `customerName`      | `varchar`     | NOT NULL         | Nombre del comensal                         |
+| `customerLastName`  | `varchar`     | NOT NULL         | Apellidos del comensal                      |
+| `customerEmail`     | `varchar`     | NOT NULL         | Email para notificaciones                   |
+| `customerPhone`     | `varchar`     | NOT NULL         | Teléfono de contacto                        |
+| `notes`             | `text`        | NULLABLE         | Notas adicionales del comensal              |
+| `status`            | `enum`        | DEFAULT PENDING  | Estado de la reserva                        |
+| `depositAmount`     | `decimal`     | DEFAULT 0        | Importe del depósito en euros               |
+| `paymentStatus`     | `enum`        | DEFAULT PENDING  | Estado del pago                             |
+| `paymentId`         | `varchar`     | NULLABLE         | ID del proveedor de pagos (H3)              |
+| `paymentMethod`     | `varchar`     | NULLABLE         | Método de pago (H3)                         |
+| `paymentDeadline`   | `timestamptz` | NULLABLE         | Límite para pagar el depósito (H3)          |
+| `rejectionReason`   | `text`        | NULLABLE         | Motivo de rechazo (si aplica)               |
+| `cancellationToken` | `uuid`        | NOT NULL, UNIQUE | Token único para cancelar sin autenticación |
+| `createdAt`         | `timestamptz` | AUTO             | Fecha de creación                           |
+| `updatedAt`         | `timestamptz` | AUTO             | Fecha de última modificación                |
+
+**Índices:**
+
+- `cancellationToken` — UNIQUE + INDEX (búsqueda frecuente en cancelaciones públicas)
 
 **Enum `ReservationStatus`:**
 
-| Valor       | Descripción                           |
-|-------------|---------------------------------------|
-| `PENDING`   | Pendiente de aprobación (modo MANUAL) |
-| `CONFIRMED` | Confirmada                            |
-| `REJECTED`  | Rechazada por el restaurante          |
-| `CANCELLED` | Cancelada por el comensal             |
+| Valor             | Descripción                           |
+|-------------------|---------------------------------------|
+| `PENDING`         | Pendiente de aprobación (modo MANUAL) |
+| `CONFIRMED`       | Confirmada (auto o manualmente)       |
+| `REJECTED`        | Rechazada por el restaurante          |
+| `CANCELLED`       | Cancelada por el comensal             |
+| `PENDING_PAYMENT` | Pendiente de pago del depósito (H3)   |
 
 **Enum `PaymentStatus`:**
 
-| Valor             | Descripción       |
-|-------------------|-------------------|
-| `PENDING_PAYMENT` | Pendiente de pago |
-| `PAID`            | Depósito pagado   |
-| `FAILED`          | Pago fallido      |
-| `REFUNDED`        | Depósito devuelto |
+| Valor      | Descripción       |
+|------------|-------------------|
+| `PENDING`  | Sin pago iniciado |
+| `PAID`     | Depósito pagado   |
+| `REFUNDED` | Depósito devuelto |
+| `FAILED`   | Pago fallido      |
+
+**Notas:**
+
+- Los comensales no tienen cuenta — todos sus datos se guardan en la reserva
+- `cancellationToken` es un UUID generado con `crypto.randomUUID()` en el momento de la creación
+- Los campos de pago (`paymentId`, `paymentMethod`, `paymentDeadline`) están preparados para H3 (Stripe)
 
 ---
 

@@ -81,7 +81,7 @@ export class ReservationTypeOrmRepository extends ReservationRepositoryPort {
       entity.customerPhone,
       entity.notes,
       entity.status,
-      entity.depositAmount,
+      Number(entity.depositAmount),
       entity.paymentStatus,
       entity.paymentId,
       entity.paymentMethod,
