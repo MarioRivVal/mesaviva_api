@@ -1,10 +1,17 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+} from '@nestjs/common';
 import { Auth } from '@shared/infrastructure/decorators/auth.decorator';
 import { CurrentUser } from '@shared/infrastructure/decorators/current-user.decorator';
 import { UserRole } from '@modules/users/domain/enums/user-role.enum';
 import { User } from '@modules/users/domain/entities/user.entity';
-import { GetSettingsUseCase } from '../../application/use-cases/get-settings.use-case';
-import { UpdateSettingsUseCase } from '../../application/use-cases/update-settings.use-case';
+import { GetSettingsUseCase } from '@modules/settings/application/use-cases/get-settings.use-case';
+import { UpdateSettingsUseCase } from '@modules/settings/application/use-cases/update-settings.use-case';
 import { UpdateSettingsHttpDto } from './dtos/update-settings.http-dto';
 
 @Controller('settings')

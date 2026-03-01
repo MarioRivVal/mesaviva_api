@@ -1,5 +1,12 @@
 import { plainToInstance } from 'class-transformer';
-import { IsEnum, IsNumber, IsString, validateSync } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  validateSync,
+} from 'class-validator';
 
 enum Environment {
   DEVELOPMENT = 'development',
@@ -37,6 +44,19 @@ class EnvironmentVariables {
 
   @IsString()
   FRONTEND_URL: string = 'http://localhost:3000';
+
+  @IsString()
+  RESEND_API_KEY: string;
+
+  @IsString()
+  EMAIL_FROM_NAME: string;
+
+  @IsEmail()
+  EMAIL_FROM_ADDRESS: string;
+
+  @IsEmail()
+  @IsOptional()
+  EMAIL_DEV_REDIRECT?: string;
 }
 
 export function validate(config: Record<string, unknown>) {

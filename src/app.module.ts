@@ -8,6 +8,7 @@ import { UsersModule } from '@modules/users/users.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from '@modules/auth/auth.module';
 import { SettingsModule } from '@modules/settings/settings.module';
+import { ReservationsModule } from '@modules/reservations/reservations.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { SettingsModule } from '@modules/settings/settings.module';
     UsersModule,
     AuthModule,
     SettingsModule,
+    ReservationsModule,
   ],
 })
 export class AppModule {}

@@ -1,11 +1,4 @@
-import {
-  ArgumentsHost,
-  Catch,
-  ExceptionFilter,
-  HttpException,
-  HttpStatus,
-  Logger,
-} from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger, } from '@nestjs/common';
 import { Request, Response } from 'express';
 import {
   BadRequestError,
@@ -47,7 +40,6 @@ export class DomainExceptionFilter implements ExceptionFilter {
     error: string;
     message: string;
   } {
-    // 1 — HttpException de NestJS → pasa tal cual
     if (exception instanceof HttpException) {
       const status = exception.getStatus();
       const res = exception.getResponse();
@@ -63,7 +55,6 @@ export class DomainExceptionFilter implements ExceptionFilter {
       };
     }
 
-    // 2 — Errores de dominio → mapeamos a HTTP
     if (exception instanceof ConflictError) {
       return {
         statusCode: HttpStatus.CONFLICT,
@@ -100,7 +91,6 @@ export class DomainExceptionFilter implements ExceptionFilter {
       };
     }
 
-    // 3 — Cualquier otro error → 500
     return {
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
       error: 'Internal Server Error',

@@ -1,4 +1,4 @@
-import { ReservationAcceptedParams } from '../../../application/ports/email.service.port';
+import { ReservationAcceptedParams } from '@modules/notifications/domain/ports/email.service.port';
 
 export function getReservationAcceptedTemplate(
   params: ReservationAcceptedParams,

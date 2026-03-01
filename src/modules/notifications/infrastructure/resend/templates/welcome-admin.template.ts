@@ -1,4 +1,4 @@
-import { WelcomeAdminParams } from '../../../application/ports/email.service.port';
+import { WelcomeAdminParams } from '@modules/notifications/domain/ports/email.service.port';
 
 export function getWelcomeAdminTemplate(params: WelcomeAdminParams): string {
   return `

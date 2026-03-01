@@ -5,23 +5,29 @@ import {
   EmailServicePort,
   NewReservationAdminParams,
   ReservationAcceptedParams,
+  ReservationCancelledParams,
+  ReservationPendingParams,
   ReservationRejectedParams,
   WelcomeAdminParams,
-} from '@modules/notifications/application/ports/email.service.port';
+} from '@modules/notifications/domain/ports/email.service.port';
 import { getWelcomeAdminTemplate } from './templates/welcome-admin.template';
 import { getReservationAcceptedTemplate } from './templates/reservation-accepted.template';
 import { getReservationRejectedTemplate } from './templates/reservation-rejected.template';
 import { getNewReservationAdminTemplate } from './templates/new-reservation-admin.template';
+import { getReservationPendingTemplate } from '@modules/notifications/infrastructure/resend/templates/reservation-pending.template';
+import { getReservationCancelledTemplate } from '@modules/notifications/infrastructure/resend/templates/reservationCancelled.template';
 
 @Injectable()
-export class ResendEmailService implements EmailServicePort {
+export class ResendEmailService extends EmailServicePort {
   private readonly resend: Resend;
   private readonly fromEmail: string;
   private readonly fromName: string;
   private readonly devRedirect: string | undefined;
+  private readonly isDev: boolean;
   private readonly logger = new Logger(ResendEmailService.name);
 
   constructor(private readonly configService: ConfigService) {
+    super();
     const apiKey = this.configService.get<string>('RESEND_API_KEY');
     const fromName = this.configService.get<string>('EMAIL_FROM_NAME');
     const fromEmail = this.configService.get<string>('EMAIL_FROM_ADDRESS');
@@ -36,6 +42,7 @@ export class ResendEmailService implements EmailServicePort {
     this.fromName = fromName;
     this.fromEmail = fromEmail;
     this.devRedirect = this.configService.get<string>('EMAIL_DEV_REDIRECT');
+    this.isDev = this.configService.get<string>('NODE_ENV') === 'development';
   }
 
   private get from(): string {
@@ -107,8 +114,40 @@ export class ResendEmailService implements EmailServicePort {
     }
   }
 
+  async sendReservationPending(
+    params: ReservationPendingParams,
+  ): Promise<void> {
+    try {
+      await this.resend.emails.send({
+        from: this.from,
+        to: this.getRecipient(params.to),
+        subject: '🕐 Solicitud de Reserva Recibida',
+        html: getReservationPendingTemplate(params),
+      });
+    } catch (error) {
+      this.logger.error(`Error enviando email pendiente a ${params.to}`, error);
+    }
+  }
+
+  async sendReservationCancelled(
+    params: ReservationCancelledParams,
+  ): Promise<void> {
+    try {
+      await this.resend.emails.send({
+        from: this.from,
+        to: this.getRecipient(params.to),
+        subject: 'Reserva Cancelada',
+        html: getReservationCancelledTemplate(params),
+      });
+    } catch (error) {
+      this.logger.error(
+        `Error enviando email cancelación a ${params.to}`,
+        error,
+      );
+    }
+  }
+
   private getRecipient(realEmail: string): string {
-    const isDev = this.configService.get<string>('NODE_ENV') === 'development';
-    return isDev && this.devRedirect ? this.devRedirect : realEmail;
+    return this.isDev && this.devRedirect ? this.devRedirect : realEmail;
   }
 }

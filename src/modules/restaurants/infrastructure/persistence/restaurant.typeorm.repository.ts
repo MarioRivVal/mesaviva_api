@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RestaurantRepositoryPort } from '../../domain/ports/restaurant.repository.port';
-import { RestaurantOrmEntity } from './restaurant.orm-entity';
-import { Restaurant } from '../../domain/entities/restaurant.entity';
+import { RestaurantRepositoryPort } from '@modules/restaurants/domain/ports/restaurant.repository.port';
+import { RestaurantOrmEntity } from '@modules/restaurants/infrastructure/persistence/restaurant.orm-entity';
+import { Restaurant } from '@modules/restaurants/domain/entities/restaurant.entity';
 
 @Injectable()
 export class RestaurantTypeOrmRepository extends RestaurantRepositoryPort {

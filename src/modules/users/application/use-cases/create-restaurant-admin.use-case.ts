@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepositoryPort } from '../../domain/ports/user.repository.port';
-import { RestaurantRepositoryPort } from '../../../restaurants/domain/ports/restaurant.repository.port';
+import { UserRepositoryPort } from '@modules/users/domain/ports/user.repository.port';
+import { RestaurantRepositoryPort } from '@modules/restaurants/domain/ports/restaurant.repository.port';
 import {
   CreateRestaurantAdminInput,
   CreateRestaurantAdminResult,
-} from '../dtos/create-restaurant-admin.dto';
+} from '@modules/users/application/dtos/create-restaurant-admin.dto';
 import { User } from '@modules/users/domain/entities/user.entity';
 import { Restaurant } from '@modules/restaurants/domain/entities/restaurant.entity';
 import { UserRole } from '@modules/users/domain/enums/user-role.enum';
 import { PasswordHasherPort } from '@shared/domain/ports/password-hasher.port';
-
-import { EmailServicePort } from '@modules/notifications/application/ports/email.service.port';
+import { EmailServicePort } from '@modules/notifications/domain/ports/email.service.port';
 import { ConflictError } from '@shared/domain/errors/domain.errors';
 import { generateTemporaryPassword } from '@shared/domain/utils/password-generator.utils';
 import { generateSlug } from '@shared/domain/utils/generate-slug.utils';

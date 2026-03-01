@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { EmailServicePort } from './application/ports/email.service.port';
+import { EmailServicePort } from './domain/ports/email.service.port';
 import { ResendEmailService } from './infrastructure/resend/resend-email.service';
 
 @Module({

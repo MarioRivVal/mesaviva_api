@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { CreateRestaurantAdminHttpDto } from './dtos/create-restaurant-admin.http-dto';
-import { CreateRestaurantAdminResult } from '../../application/dtos/create-restaurant-admin.dto';
-import { CreateRestaurantAdminUseCase } from '../../application/use-cases/create-restaurant-admin.use-case';
+import { CreateRestaurantAdminResult } from '@modules/users/application/dtos/create-restaurant-admin.dto';
+import { CreateRestaurantAdminUseCase } from '@modules/users/application/use-cases/create-restaurant-admin.use-case';
 import { Auth } from '@shared/infrastructure/decorators/auth.decorator';
 import { UserRole } from '@modules/users/domain/enums/user-role.enum';
 

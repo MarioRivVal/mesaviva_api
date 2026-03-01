@@ -5,9 +5,9 @@ import { UserRepositoryPort } from './domain/ports/user.repository.port';
 import { UserTypeOrmRepository } from './infrastructure/persistence/user.typeorm.repository';
 import { CreateRestaurantAdminUseCase } from './application/use-cases/create-restaurant-admin.use-case';
 import { UsersController } from './infrastructure/controllers/users.controller';
-import { NotificationsModule } from '../notifications/notifications.module';
+import { NotificationsModule } from '@modules/notifications/notifications.module';
 import { SharedModule } from '@shared/shared.module';
-import { RestaurantsModule } from '../restaurants/restaurants.module';
+import { RestaurantsModule } from '@modules/restaurants/restaurants.module';
 
 @Module({
   imports: [

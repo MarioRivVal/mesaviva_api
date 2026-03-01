@@ -1,4 +1,4 @@
-import { ReservationRejectedParams } from '../../../application/ports/email.service.port';
+import { ReservationRejectedParams } from '@modules/notifications/domain/ports/email.service.port';
 
 export function getReservationRejectedTemplate(
   params: ReservationRejectedParams,

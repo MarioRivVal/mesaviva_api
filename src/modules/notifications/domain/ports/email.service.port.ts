@@ -30,11 +30,19 @@ export type ReservationAcceptedParams = BaseEmailParams &
   CustomerInfo &
   ReservationInfo;
 
+export type ReservationPendingParams = BaseEmailParams &
+  CustomerInfo &
+  ReservationInfo;
+
 export type ReservationRejectedParams = BaseEmailParams &
   CustomerInfo &
   ReservationInfo & {
     rejectionReason?: string;
   };
+
+export type ReservationCancelledParams = BaseEmailParams &
+  CustomerInfo &
+  ReservationInfo;
 
 export type NewReservationAdminParams = BaseEmailParams &
   CustomerInfo &
@@ -49,8 +57,14 @@ export abstract class EmailServicePort {
   abstract sendReservationAccepted(
     params: ReservationAcceptedParams,
   ): Promise<void>;
+  abstract sendReservationPending(
+    params: ReservationPendingParams,
+  ): Promise<void>;
   abstract sendReservationRejected(
     params: ReservationRejectedParams,
+  ): Promise<void>;
+  abstract sendReservationCancelled(
+    params: ReservationCancelledParams,
   ): Promise<void>;
   abstract sendNewReservationToAdmin(
     params: NewReservationAdminParams,

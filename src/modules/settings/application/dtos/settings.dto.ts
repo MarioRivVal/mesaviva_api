@@ -1,6 +1,6 @@
-import { AcceptanceMode } from '../../../settings/domain/enums/acceptance-mode.enum';
-import { OpeningHours } from '../../../settings/domain/types/opening-hours.type';
-import { TimeSlotInterval } from '../../../settings/domain/constants/time-slot-interval.const';
+import { AcceptanceMode } from '@modules/settings/domain/enums/acceptance-mode.enum';
+import { OpeningHours } from '@modules/settings/domain/types/opening-hours.type';
+import { TimeSlotInterval } from '@modules/settings/domain/constants/time-slot-interval.const';
 import { User } from '@modules/users/domain/entities/user.entity';
 
 export interface GetSettingsInput {

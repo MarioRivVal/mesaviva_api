@@ -1,5 +1,5 @@
-import { UserRole } from '../../domain/enums/user-role.enum';
-import { RestaurantCategory } from '../../../restaurants/domain/enums/restaurant-category.enum';
+import { UserRole } from '@modules/users/domain/enums/user-role.enum';
+import { RestaurantCategory } from '@modules/restaurants/domain/enums/restaurant-category.enum';
 
 export interface CreateRestaurantAdminInput {
   email: string;

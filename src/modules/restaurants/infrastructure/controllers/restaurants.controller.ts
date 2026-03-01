@@ -1,6 +1,8 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { ListPublicRestaurantsUseCase } from '@modules/restaurants/applications/use-cases/list-public-restaurants.use-case';
-import { GetPublicRestaurantUseCase } from '@modules/restaurants/applications/use-cases/get-public-restaurant.use-case';
+import {
+  ListPublicRestaurantsUseCase
+} from '@modules/restaurants/application/use-cases/list-public-restaurants.use-case';
+import { GetPublicRestaurantUseCase } from '@modules/restaurants/application/use-cases/get-public-restaurant.use-case';
 
 @Controller('restaurants')
 export class RestaurantsController {
