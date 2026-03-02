@@ -11,7 +11,7 @@ almacenado en cookie httpOnly.
 auth/
 ├── application/
 │   ├── dtos/
-│   │   └── login.dto.ts          # Tipos de entrada/salida del use case
+│   │   └── auth.dto.ts          # Tipos de entrada/salida del use case
 │   └── use-cases/
 │       └── login.use-case.ts     # Lógica de autenticación
 ├── infrastructure/

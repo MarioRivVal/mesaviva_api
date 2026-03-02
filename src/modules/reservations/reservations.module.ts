@@ -10,6 +10,11 @@ import { ReservationsController } from './infrastructure/controllers/reservation
 import { RestaurantsModule } from '@modules/restaurants/restaurants.module';
 import { SettingsModule } from '@modules/settings/settings.module';
 import { NotificationsModule } from '@modules/notifications/notifications.module';
+import { CancelReservationUseCase } from '@modules/reservations/application/use-cases/cancel-reservation.use-case';
+import { GetReservationsUseCase } from '@modules/reservations/application/use-cases/get-reservations.use-case';
+import { ConfirmReservationUseCase } from '@modules/reservations/application/use-cases/confirm-reservation.use-case';
+import { RejectReservationUseCase } from '@modules/reservations/application/use-cases/reject-reservation.use-case';
+import { ReservationAccessService } from '@modules/reservations/application/services/reservation-access.service';
 
 @Module({
   imports: [
@@ -24,8 +29,13 @@ import { NotificationsModule } from '@modules/notifications/notifications.module
       useClass: ReservationTypeOrmRepository,
     },
     ReservationValidatorService,
+    ReservationAccessService,
     CreateReservationUseCase,
     CancelByTokenUseCase,
+    CancelReservationUseCase,
+    GetReservationsUseCase,
+    ConfirmReservationUseCase,
+    RejectReservationUseCase,
   ],
   controllers: [ReservationsController],
   exports: [ReservationRepositoryPort],

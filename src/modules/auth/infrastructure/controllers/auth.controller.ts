@@ -3,6 +3,7 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
+  Patch,
   Post,
   Res,
 } from '@nestjs/common';
@@ -10,10 +11,19 @@ import type { Response } from 'express';
 import { LoginUseCase } from '@modules/auth/application/use-cases/login.use-case';
 import { LoginHttpDto } from './dtos/login.http-dto';
 import { Throttle } from '@nestjs/throttler';
+import { Auth } from '@shared/infrastructure/decorators/auth.decorator';
+import { UserRole } from '@modules/users/domain/enums/user-role.enum';
+import { CurrentUser } from '@shared/infrastructure/decorators/current-user.decorator';
+import { User } from '@modules/users/domain/entities/user.entity';
+import { ChangePasswordUseCase } from '@modules/auth/application/use-cases/change-password.use-case';
+import { ChangePasswordHttpDto } from '@modules/auth/infrastructure/controllers/dtos/change-password.http-dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly loginUseCase: LoginUseCase) {}
+  constructor(
+    private readonly loginUseCase: LoginUseCase,
+    private readonly changePasswordUseCase: ChangePasswordUseCase,
+  ) {}
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
@@ -48,5 +58,20 @@ export class AuthController {
     return {
       ok: true,
     };
+  }
+
+  @Patch('change-password')
+  @HttpCode(HttpStatus.OK)
+  @Auth(UserRole.SUPERADMIN, UserRole.RESTAURANT_ADMIN)
+  async changePassword(
+    @Body() body: ChangePasswordHttpDto,
+    @CurrentUser() user: User,
+  ) {
+    await this.changePasswordUseCase.execute({
+      currentUser: user,
+      currentPassword: body.currentPassword,
+      newPassword: body.newPassword,
+    });
+    return { message: 'Password changed successfully' };
   }
 }

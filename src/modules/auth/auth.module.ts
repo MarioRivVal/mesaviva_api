@@ -8,6 +8,7 @@ import { JwtStrategy } from './infrastructure/strategies/jwt.strategy';
 import { getJwtConfig } from './infrastructure/config/jwt.config';
 import { UsersModule } from '@modules/users/users.module';
 import { SharedModule } from '@shared/shared.module';
+import { ChangePasswordUseCase } from '@modules/auth/application/use-cases/change-password.use-case';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { SharedModule } from '@shared/shared.module';
     UsersModule,
     SharedModule,
   ],
-  providers: [LoginUseCase, JwtStrategy],
+  providers: [LoginUseCase, ChangePasswordUseCase, JwtStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}

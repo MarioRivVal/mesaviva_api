@@ -58,7 +58,7 @@ src/
 │   ├── auth/
 │   │   ├── application/
 │   │   │   ├── dtos/
-│   │   │   │   └── login.dto.ts
+│   │   │   │   └── auth.dto.ts
 │   │   │   └── use-cases/
 │   │   │       └── login.use-case.ts
 │   │   ├── infrastructure/

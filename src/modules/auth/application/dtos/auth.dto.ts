@@ -1,4 +1,5 @@
 import { UserRole } from '@modules/users/domain/enums/user-role.enum';
+import { User } from '@modules/users/domain/entities/user.entity';
 
 export interface LoginInput {
   email: string;
@@ -15,4 +16,10 @@ export interface LoginResult {
     role: UserRole;
     mustChangePassword: boolean;
   };
+}
+
+export interface ChangePasswordInput {
+  currentUser: User;
+  currentPassword: string;
+  newPassword: string;
 }

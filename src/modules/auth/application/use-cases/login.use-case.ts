@@ -7,7 +7,7 @@ import { PasswordHasherPort } from '@shared/domain/ports/password-hasher.port';
 import {
   LoginInput,
   LoginResult,
-} from '@modules/auth/application/dtos/login.dto';
+} from '@modules/auth/application/dtos/auth.dto';
 
 @Injectable()
 export class LoginUseCase {
