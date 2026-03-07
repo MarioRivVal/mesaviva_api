@@ -1,0 +1,29 @@
+import { forwardRef, Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { RestaurantOrmEntity } from './infrastructure/persistence/restaurant.orm-entity';
+import { RestaurantRepositoryPort } from './domain/ports/restaurant.repository.port';
+import { RestaurantTypeOrmRepository } from './infrastructure/persistence/restaurant.typeorm.repository';
+import { SettingsModule } from '@modules/settings/settings.module';
+import { ListPublicRestaurantsUseCase } from '@modules/restaurants/application/use-cases/list-public-restaurants.use-case';
+import { GetPublicRestaurantUseCase } from '@modules/restaurants/application/use-cases/get-public-restaurant.use-case';
+import { RestaurantsController } from '@modules/restaurants/infrastructure/controllers/restaurants.controller';
+import { GetRestaurantsUseCase } from '@modules/restaurants/application/use-cases/get-restaurants.use-case';
+
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([RestaurantOrmEntity]),
+    forwardRef(() => SettingsModule),
+  ],
+  providers: [
+    {
+      provide: RestaurantRepositoryPort,
+      useClass: RestaurantTypeOrmRepository,
+    },
+    ListPublicRestaurantsUseCase,
+    GetPublicRestaurantUseCase,
+    GetRestaurantsUseCase,
+  ],
+  controllers: [RestaurantsController],
+  exports: [RestaurantRepositoryPort],
+})
+export class RestaurantsModule {}

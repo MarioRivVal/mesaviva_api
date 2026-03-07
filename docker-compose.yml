@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:16
+    container_name: mesaviva_db
+    restart: no
+    environment:
+      POSTGRES_USER: mario
+      POSTGRES_PASSWORD: mario
+      POSTGRES_DB: mesaviva_reservations
+    ports:
+      - '5434:5432'
+    volumes:
+      - restaurant_db_data:/var/lib/postgresql/data
+
+volumes:
+  restaurant_db_data:
