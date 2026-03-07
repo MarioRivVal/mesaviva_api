@@ -1,11 +1,7 @@
 import { ReservationAcceptedParams } from '@modules/notifications/domain/ports/email.service.port';
 
-type ReservationAcceptedTemplateParams = ReservationAcceptedParams & {
-  cancellationUrl: string;
-};
-
 export function getReservationAcceptedTemplate(
-  params: ReservationAcceptedTemplateParams,
+  params: ReservationAcceptedParams,
 ): string {
   return `
 <h1>¡Reserva Confirmada! ✅</h1>
@@ -23,12 +19,6 @@ ${params.notes ? `<li><strong>Notas:</strong> ${params.notes}</li>` : ''}
 </ul>
 
 <p>¡Te esperamos!</p>
-
-<hr>
-<h3>¿Necesitas cancelar?</h3>
-<p>Si no puedes asistir, puedes cancelar tu reserva haciendo clic en el siguiente enlace:</p>
-<p><a href="${params.cancellationUrl}">Cancelar mi reserva</a></p>
-<p><small>O copia este enlace en tu navegador: ${params.cancellationUrl}</small></p>
 
 <hr>
 <p><small>Email automático de MesaViva</small></p>

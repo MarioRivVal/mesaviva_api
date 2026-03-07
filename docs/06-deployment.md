@@ -184,66 +184,9 @@ node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 
 ---
 
-## CI/CD con GitHub Actions
-
-> 🚧 Pendiente de configurar
-
-Pipeline recomendado con GitHub Actions que se ejecuta en cada push a `main`:
-
-```yaml
-# .github/workflows/deploy.yml
-name: Deploy MesaViva API
-
-on:
-  push:
-    branches: [ main ]
-
-jobs:
-  test:
-    name: Tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: api/package-lock.json
-      - name: Install dependencies
-        run: npm ci
-        working-directory: api
-      - name: Run tests
-        run: npm test
-        working-directory: api
-      - name: Build
-        run: npm run build
-        working-directory: api
-
-  deploy:
-    name: Deploy to Coolify
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger Coolify deploy webhook
-        run: |
-          curl -X POST "${{ secrets.COOLIFY_WEBHOOK_URL }}" \
-            -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}"
-```
-
-**Secrets necesarios en GitHub:**
-
-| Secret                | Descripción                          |
-|-----------------------|--------------------------------------|
-| `COOLIFY_WEBHOOK_URL` | URL del webhook de deploy en Coolify |
-| `COOLIFY_TOKEN`       | Token de autenticación de Coolify    |
-
----
-
 ## Siguientes pasos
 
-- Crear `Dockerfile` y `.dockerignore` en la raíz de `api/`
-- Configurar migraciones de TypeORM (`data-source.ts`)
-- Crear pipeline `.github/workflows/deploy.yml`
-- Configurar dominio y SSL en panel de Coolify
-- [Testing](./07-testing.md)
-- [Roadmap](./09-roadmap.md)
+- Configurar `Dockerfile` y `.dockerignore`
+- Configurar migraciones de TypeORM
+- Configurar pipeline CI/CD con GitHub Actions
+- Configurar dominio y SSL en Coolify

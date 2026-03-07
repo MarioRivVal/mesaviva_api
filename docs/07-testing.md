@@ -49,13 +49,11 @@ test/
     ├── auth/
     │   └── application/
     │       └── use-cases/
-    │           ├── login.use-case.spec.ts
-    │           └── change-password.use-case.spec.ts
+    │           └── login.use-case.spec.ts
     ├── restaurants/
     │   └── application/
     │       └── use-cases/
     │           ├── get-public-restaurant.use-case.spec.ts
-    │           ├── get-restaurants.use-case.spec.ts          ← nuevo H2
     │           └── list-public-restaurants.use-case.spec.ts
     ├── reservations/
     │   └── application/
@@ -63,12 +61,7 @@ test/
     │       │   └── reservation-validator.service.spec.ts
     │       └── use-cases/
     │           ├── create-reservation.use-case.spec.ts
-    │           ├── cancel-by-token.use-case.spec.ts
-    │           ├── cancel-reservation.use-case.spec.ts
-    │           ├── confirm-reservation.use-case.spec.ts
-    │           ├── get-reservation.use-case.spec.ts          ← nuevo H2
-    │           ├── get-reservations.use-case.spec.ts
-    │           └── reject-reservation.use-case.spec.ts
+    │           └── cancel-by-token.use-case.spec.ts
     ├── settings/
     │   └── application/
     │       └── use-cases/
@@ -87,28 +80,18 @@ test/
 
 ## Cobertura actual
 
-| Módulo           | Archivo                                    | Tests   | Casos cubiertos                                                                                               |
-|------------------|--------------------------------------------|---------|---------------------------------------------------------------------------------------------------------------|
-| **Auth**         | `login.use-case.spec.ts`                   | 4       | Login OK, usuario inexistente, contraseña errónea, `mustChangePassword`                                       |
-| **Auth**         | `change-password.use-case.spec.ts`         | 7       | Cambio OK, usuario no existe, contraseña incorrecta, igual a la actual, sin mayúscula, sin símbolo, fortaleza |
-| **Users**        | `create-restaurant-admin.use-case.spec.ts` | 5       | Creación OK, email duplicado, slug único, rollback BD, email bienvenida                                       |
-| **Restaurants**  | `get-public-restaurant.use-case.spec.ts`   | 5       | Detalle OK, settings null, no existe, inactivo, campos completos                                              |
-| **Restaurants**  | `list-public-restaurants.use-case.spec.ts` | 5       | Solo activos, lista vacía, sin activos, campos públicos, conteo correcto                                      |
-| **Restaurants**  | `get-restaurants.use-case.spec.ts`         | 5       | OK propietario, lista vacía, forbidden otro admin, superadmin libre, mapeo de campos                          |
-| **Settings**     | `get-settings.use-case.spec.ts`            | 5       | OK superadmin, OK propietario, forbidden otro admin, restaurante no existe, settings no existen               |
-| **Settings**     | `update-settings.use-case.spec.ts`         | 6       | Actualizar, crear, campos faltantes, forbidden, superadmin libre                                              |
-| **Reservations** | `create-reservation.use-case.spec.ts`      | 8       | AUTO/MANUAL, sin restaurante, inactivo, sin settings, validadores, emails                                     |
-| **Reservations** | `cancel-by-token.use-case.spec.ts`         | 8       | Cancelar CONFIRMED/PENDING, token inválido, sin restaurante, estados inválidos, emails                        |
-| **Reservations** | `cancel-reservation.use-case.spec.ts`      | 7       | Cancelar CONFIRMED/PENDING, ya cancelada, rechazada, no existe, forbidden, email                              |
-| **Reservations** | `confirm-reservation.use-case.spec.ts`     | 7       | Confirmar PENDING, ya confirmada, cancelada, no existe, forbidden, notas con/sin email                        |
-| **Reservations** | `reject-reservation.use-case.spec.ts`      | 7       | Rechazar PENDING, ya confirmada, ya rechazada, cancelada, no existe, forbidden, motivo                        |
-| **Reservations** | `get-reservations.use-case.spec.ts`        | 6       | OK propietario, restaurante no existe, forbidden, superadmin libre, lista vacía, filtros                      |
-| **Reservations** | `get-reservation.use-case.spec.ts`         | 5       | OK propietario, reserva no existe, restaurante no existe, forbidden otro admin, superadmin libre              |
-| **Reservations** | `reservation-validator.service.spec.ts`    | 21      | Grupo, antelación, horario (día cerrado, sin turno, último slot), intervalos, capacidad                       |
-| **Total**        |                                            | **114** |                                                                                                               |
-
-> **Nota:** Los test suites `get-reservation.use-case.spec.ts` y `get-restaurants.use-case.spec.ts`
-> se añadieron en la iteración H2 (7 marzo 2026) y no están comiteados aún.
+| Módulo           | Archivo                                    | Tests  | Casos cubiertos                                                                         |
+|------------------|--------------------------------------------|--------|-----------------------------------------------------------------------------------------|
+| **Auth**         | `login.use-case.spec.ts`                   | 4      | Login OK, usuario inexistente, contraseña errónea, `mustChangePassword`                 |
+| **Users**        | `create-restaurant-admin.use-case.spec.ts` | 5      | Creación OK, email duplicado, slug único, rollback BD, email bienvenida                 |
+| **Restaurants**  | `get-public-restaurant.use-case.spec.ts`   | 5      | Detalle OK, settings null, no existe, inactivo, campos completos                        |
+| **Restaurants**  | `list-public-restaurants.use-case.spec.ts` | 2      | Solo activos, conteo correcto                                                           |
+| **Settings**     | `get-settings.use-case.spec.ts`            | 4      | OK, restaurante no existe, settings no existen, forbidden por rol                       |
+| **Settings**     | `update-settings.use-case.spec.ts`         | 6      | Actualizar, crear, campos faltantes, forbidden, superadmin libre                        |
+| **Reservations** | `create-reservation.use-case.spec.ts`      | 8      | AUTO/MANUAL, sin restaurante, inactivo, sin settings, validadores, emails               |
+| **Reservations** | `cancel-by-token.use-case.spec.ts`         | 7      | Cancelar CONFIRMED/PENDING, token inválido, sin restaurante, estados inválidos, emails  |
+| **Reservations** | `reservation-validator.service.spec.ts`    | 21     | Grupo, antelación, horario (día cerrado, sin turno, último slot), intervalos, capacidad |
+| **Total**        |                                            | **68** |                                                                                         |
 
 ---
 
@@ -233,24 +216,11 @@ al `moduleNameMapper` de Jest — no requieren `tsconfig-paths`.
 5. Mockear los ports con `jest.Mocked<Port>`
 6. Cubrir: caso feliz, errores de negocio y efectos secundarios
 
-### Checklist rápida para nuevos use cases
-
-Cuando se añade un nuevo use case en `src/`, revisar si tiene test:
-
-| Tipo de archivo          | ¿Necesita test? | Dónde                                          |
-|--------------------------|-----------------|------------------------------------------------|
-| `*.use-case.ts`          | ✅ Sí            | `test/modules/<módulo>/application/use-cases/` |
-| `*.service.ts` (dominio) | ✅ Sí            | `test/modules/<módulo>/application/services/`  |
-| Repositorios TypeORM     | ❌ No            | Se confía en TypeORM                           |
-| Controllers              | ❌ No            | La validación la cubre class-validator         |
-| Guards / decoradores     | ❌ No            | Infraestructura estable                        |
-
 ---
 
 ## Siguientes pasos
 
-- Añadir tests para use cases de H2 (update restaurant, list admins, update restaurant status)
+- Añadir tests para use cases de H2 (accept/reject reservation, update restaurant, list admins)
 - Considerar tests de integración para el repositorio TypeORM en un entorno de BD en memoria
 - Configurar cobertura mínima en CI con `--coverageThreshold`
-- [Despliegue](./06-deployment.md)
-- [Roadmap](./09-roadmap.md)
+

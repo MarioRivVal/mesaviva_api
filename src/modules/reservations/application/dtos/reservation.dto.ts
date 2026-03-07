@@ -33,11 +33,6 @@ export interface GetReservationsInput {
   filters: ReservationFilters;
 }
 
-export interface GetReservationInput {
-  reservationId: string;
-  currentUser: User;
-}
-
 export interface ConfirmReservationInput {
   reservationId: string;
   currentUser: User;

@@ -24,7 +24,6 @@ export class ResendEmailService extends EmailServicePort {
   private readonly fromName: string;
   private readonly devRedirect: string | undefined;
   private readonly isDev: boolean;
-  private readonly frontendUrl: string;
   private readonly logger = new Logger(ResendEmailService.name);
 
   constructor(private readonly configService: ConfigService) {
@@ -44,8 +43,6 @@ export class ResendEmailService extends EmailServicePort {
     this.fromEmail = fromEmail;
     this.devRedirect = this.configService.get<string>('EMAIL_DEV_REDIRECT');
     this.isDev = this.configService.get<string>('NODE_ENV') === 'development';
-    this.frontendUrl =
-      this.configService.get<string>('FRONTEND_URL') ?? 'http://localhost:3000';
   }
 
   private get from(): string {
@@ -69,12 +66,11 @@ export class ResendEmailService extends EmailServicePort {
     params: ReservationAcceptedParams,
   ): Promise<void> {
     try {
-      const cancellationUrl = `${this.frontendUrl}/reservas/cancelar/${params.cancellationToken}`;
       await this.resend.emails.send({
         from: this.from,
         to: this.getRecipient(params.to),
         subject: '✅ Reserva Confirmada',
-        html: getReservationAcceptedTemplate({ ...params, cancellationUrl }),
+        html: getReservationAcceptedTemplate(params),
       });
     } catch (error) {
       this.logger.error(
@@ -122,12 +118,11 @@ export class ResendEmailService extends EmailServicePort {
     params: ReservationPendingParams,
   ): Promise<void> {
     try {
-      const cancellationUrl = `${this.frontendUrl}/reservas/cancelar/${params.cancellationToken}`;
       await this.resend.emails.send({
         from: this.from,
         to: this.getRecipient(params.to),
         subject: '🕐 Solicitud de Reserva Recibida',
-        html: getReservationPendingTemplate({ ...params, cancellationUrl }),
+        html: getReservationPendingTemplate(params),
       });
     } catch (error) {
       this.logger.error(`Error enviando email pendiente a ${params.to}`, error);

@@ -28,15 +28,11 @@ export type WelcomeAdminParams = BaseEmailParams & {
 
 export type ReservationAcceptedParams = BaseEmailParams &
   CustomerInfo &
-  ReservationInfo & {
-    cancellationToken: string;
-  };
+  ReservationInfo;
 
 export type ReservationPendingParams = BaseEmailParams &
   CustomerInfo &
-  ReservationInfo & {
-    cancellationToken: string;
-  };
+  ReservationInfo;
 
 export type ReservationRejectedParams = BaseEmailParams &
   CustomerInfo &

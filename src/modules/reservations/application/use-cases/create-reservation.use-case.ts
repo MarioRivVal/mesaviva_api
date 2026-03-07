@@ -114,7 +114,6 @@ export class CreateReservationUseCase {
         time: saved.time,
         numberOfPeople: saved.numberOfPeople,
         notes: saved.notes ?? undefined,
-        cancellationToken: saved.cancellationToken,
       });
     } else {
       await this.emailService.sendReservationPending({
@@ -126,7 +125,6 @@ export class CreateReservationUseCase {
         time: saved.time,
         numberOfPeople: saved.numberOfPeople,
         notes: saved.notes ?? undefined,
-        cancellationToken: saved.cancellationToken,
       });
     }
 

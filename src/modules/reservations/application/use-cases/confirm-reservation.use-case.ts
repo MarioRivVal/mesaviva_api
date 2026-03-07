@@ -31,7 +31,6 @@ export class ConfirmReservationUseCase {
       time: reservation.time,
       numberOfPeople: reservation.numberOfPeople,
       notes: reservation.notes ?? undefined,
-      cancellationToken: reservation.cancellationToken,
     });
   }
 }

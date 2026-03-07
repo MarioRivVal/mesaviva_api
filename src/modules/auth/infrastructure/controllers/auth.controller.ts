@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Get,
   HttpCode,
   HttpStatus,
   Patch,
@@ -25,21 +24,6 @@ export class AuthController {
     private readonly loginUseCase: LoginUseCase,
     private readonly changePasswordUseCase: ChangePasswordUseCase,
   ) {}
-
-  @Get('me')
-  @Auth(UserRole.SUPERADMIN, UserRole.RESTAURANT_ADMIN)
-  getMe(@CurrentUser() user: User) {
-    return {
-      user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: user.role,
-        mustChangePassword: user.mustChangePassword,
-      },
-    };
-  }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)

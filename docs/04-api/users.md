@@ -195,7 +195,6 @@ Lista todos los administradores de restaurante.
 
 ```
 @Auth(UserRole.SUPERADMIN)
-Cookie: auth_token=<jwt>
 ```
 
 ### Respuesta esperada
@@ -203,24 +202,19 @@ Cookie: auth_token=<jwt>
 **✅ 200 OK**
 
 ```json
-{
-  "admins": [
-    {
-      "id": "a1b2c3d4-...",
-      "email": "admin@restaurante.com",
-      "firstName": "Mario",
-      "lastName": "Rivera",
-      "phone": "612345678",
-      "role": "RESTAURANT_ADMIN",
-      "isActive": true,
-      "createdAt": "2026-02-25T10:00:00.000Z"
-    }
-  ],
-  "total": 1
-}
+[
+  {
+    "id": "a1b2c3d4-...",
+    "email": "admin@restaurante.com",
+    "firstName": "Mario",
+    "lastName": "Rivera",
+    "phone": "612345678",
+    "role": "RESTAURANT_ADMIN",
+    "isActive": true,
+    "createdAt": "2026-02-25T10:00:00.000Z"
+  }
+]
 ```
-
-Los administradores se ordenan por `createdAt DESC` (más recientes primero).
 
 ---
 
@@ -355,5 +349,3 @@ No requiere body. El estado se invierte automáticamente (`toggle`).
 
 - [API — Restaurants](./restaurants.md)
 - [API — Settings](./settings.md)
-- [Módulo Users](../05-modules/users.md)
-- [Roadmap H2](../09-roadmap.md)

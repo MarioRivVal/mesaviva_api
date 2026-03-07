@@ -37,9 +37,7 @@ export class ReservationValidatorService {
     time: string,
     openingHours: OpeningHours,
   ): TimeRange {
-    // Añadir T00:00:00 para evitar el off-by-one que ocurre cuando Node
-    // parsea 'YYYY-MM-DD' como UTC medianoche en timezones negativos
-    const dayOfWeek = new Date(`${date}T00:00:00`)
+    const dayOfWeek = new Date(date)
       .toLocaleDateString('en-US', { weekday: 'long' })
       .toLowerCase() as DayOfWeek;
 

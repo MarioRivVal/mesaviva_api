@@ -415,10 +415,3 @@ Configurado en `tsconfig.json`:
 }
 ```
 
----
-
-## Siguientes pasos
-
-- [Módulo Auth](./auth.md)
-- [Módulo Notifications](./notifications.md)
-- [Referencia de errores](../10-error-reference.md)

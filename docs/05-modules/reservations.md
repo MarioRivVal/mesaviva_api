@@ -25,22 +25,15 @@ reservations/
 │   ├── dtos/
 │   │   └── reservation.dto.ts                 # Tipos de entrada/salida
 │   ├── services/
-│   │   ├── reservation-validator.service.ts   # Validaciones de reglas de negocio
-│   │   └── reservation-access.service.ts      # Autorización: ownership + resolución
+│   │   └── reservation-validator.service.ts   # Validaciones de reglas de negocio
 │   └── use-cases/
 │       ├── create-reservation.use-case.ts     # Crear reserva + emails
-│       ├── cancel-by-token.use-case.ts        # Cancelar sin login (token público)
-│       ├── get-reservations.use-case.ts       # Listar reservas con filtros (admin)
-│       ├── confirm-reservation.use-case.ts    # Admin confirma reserva PENDING
-│       ├── reject-reservation.use-case.ts     # Admin rechaza reserva PENDING
-│       └── cancel-reservation.use-case.ts     # Admin cancela reserva
+│       └── cancel-by-token.use-case.ts        # Cancelar sin login
 ├── infrastructure/
 │   ├── controllers/
 │   │   ├── dtos/
-│   │   │   ├── create-reservation.http-dto.ts
-│   │   │   ├── reject-reservation.http-dto.ts
-│   │   │   └── get-reservations-query.http-dto.ts
-│   │   └── reservations.controller.ts
+│   │   │   └── create-reservation.http-dto.ts # Validación HTTP del body
+│   │   └── reservations.controller.ts         # POST y DELETE endpoints
 │   └── persistence/
 │       ├── reservation.orm-entity.ts          # Entidad TypeORM
 │       └── reservation.typeorm.repository.ts  # QueryBuilder para filtros
@@ -145,30 +138,6 @@ de validación. Se inyecta en `CreateReservationUseCase`.
 
 ---
 
-## `ReservationAccessService`
-
-Servicio de aplicación compartido por los use cases de admin.
-Centraliza la resolución de la reserva + restaurante y la verificación de ownership.
-
-```typescript
-async resolveAndAuthorize(
-    reservationId: string,
-    currentUser: User,
-): Promise<{ reservation: Reservation; restaurant: Restaurant }>
-```
-
-**Flujo:**
-
-1. Busca la reserva por ID → `NotFoundError` si no existe
-2. Busca el restaurante de la reserva → `NotFoundError` si no existe
-3. Si el usuario es `RESTAURANT_ADMIN` y no es el dueño del restaurante → `ForbiddenError`
-4. Devuelve `{ reservation, restaurant }`
-
-> Todos los use cases de admin (`ConfirmReservationUseCase`, `RejectReservationUseCase`,
-> `CancelReservationUseCase`) lo usan para evitar duplicar esta lógica.
-
----
-
 ## Use Cases
 
 ### `CreateReservationUseCase`
@@ -214,119 +183,6 @@ No requiere autenticación.
 5. Email de cancelación al comensal
 ```
 
-### `GetReservationsUseCase`
-
-Lista las reservas de un restaurante con filtros opcionales.
-
-**Dependencias:**
-
-- `ReservationRepositoryPort`
-- `RestaurantRepositoryPort`
-
-**Flujo:**
-
-```
-1. Buscar restaurante → 404 si no existe
-2. Verificar isActive → 400 si no
-3. Llamar al repositorio con los filtros → reserva por defecto: todos los estados, hoy
-4. Devolver reservas
-```
-
-### `ConfirmReservationUseCase`
-
-Permite al administrador confirmar una reserva en estado `PENDING`.
-Usa `ReservationAccessService` para resolver la reserva y verificar el ownership.
-
-**Dependencias:**
-
-- `ReservationRepositoryPort`
-- `RestaurantRepositoryPort`
-- `EmailServicePort`
-- `ReservationAccessService`
-
-**Flujo:**
-
-```
-1. resolveAndAuthorize(reservationId, currentUser) → 404 / 403 si falla
-2. reservation.accept() → 400 si no está en PENDING
-3. Persistir
-4. Email de confirmación al comensal (sendReservationAccepted)
-```
-
-### `RejectReservationUseCase`
-
-Permite al administrador rechazar una reserva en estado `PENDING`
-proporcionando un motivo que se guarda en `rejectionReason`.
-
-**Dependencias:**
-
-- `ReservationRepositoryPort`
-- `RestaurantRepositoryPort`
-- `EmailServicePort`
-- `ReservationAccessService`
-
-**Flujo:**
-
-```
-1. resolveAndAuthorize(reservationId, currentUser) → 404 / 403 si falla
-2. reservation.reject(reason) → 400 si no está en PENDING
-3. Persistir (guarda rejectionReason en BD)
-4. Email de rechazo al comensal con el motivo (sendReservationRejected)
-```
-
-### `CancelReservationUseCase`
-
-Permite al administrador cancelar una reserva (`PENDING` o `CONFIRMED`).
-Distinto de `CancelByTokenUseCase`: este requiere autenticación.
-
-**Dependencias:**
-
-- `ReservationRepositoryPort`
-- `RestaurantRepositoryPort`
-- `EmailServicePort`
-- `ReservationAccessService`
-
-**Flujo:**
-
-```
-1. resolveAndAuthorize(reservationId, currentUser) → 404 / 403 si falla
-2. reservation.cancel() → 400 si no está en PENDING o CONFIRMED
-3. Persistir
-4. Email de cancelación al comensal (sendReservationCancelled)
-```
-
-### `GetReservationsUseCase`
-
-Lista las reservas de un restaurante con filtros opcionales.
-
-**Dependencias:**
-
-- `ReservationRepositoryPort`
-- `RestaurantRepositoryPort`
-
-**Flujo:**
-
-```
-1. Buscar restaurante → 404 si no existe
-2. Si RESTAURANT_ADMIN: verificar que es el dueño → 403 si no
-3. Si SUPERADMIN: puede ver cualquier restaurante
-4. Llamar findByRestaurantAndFilters con los filtros opcionales
-5. Devolver array (vacío si no hay reservas)
-```
-
----
-
-## Endpoints implementados
-
-| Método   | Ruta                          | Use Case                    | Auth                            |
-|----------|-------------------------------|-----------------------------|---------------------------------|
-| `POST`   | `/reservations`               | `CreateReservationUseCase`  | ❌ Público                       |
-| `DELETE` | `/reservations/cancel/:token` | `CancelByTokenUseCase`      | ❌ Público                       |
-| `GET`    | `/reservations`               | `GetReservationsUseCase`    | `RESTAURANT_ADMIN` `SUPERADMIN` |
-| `PATCH`  | `/reservations/:id/confirm`   | `ConfirmReservationUseCase` | `RESTAURANT_ADMIN` `SUPERADMIN` |
-| `PATCH`  | `/reservations/:id/reject`    | `RejectReservationUseCase`  | `RESTAURANT_ADMIN` `SUPERADMIN` |
-| `PATCH`  | `/reservations/:id/cancel`    | `CancelReservationUseCase`  | `RESTAURANT_ADMIN` `SUPERADMIN` |
-
 ---
 
 ## Persistencia
@@ -346,15 +202,11 @@ garantizar que el `findByToken` sea rápido y no haya colisiones.
 
 ## Tests
 
-| Archivo                                 | Tests | Casos cubiertos                                                                                 |
-|-----------------------------------------|-------|-------------------------------------------------------------------------------------------------|
-| `create-reservation.use-case.spec.ts`   | 8     | AUTO/MANUAL, restaurante inexistente/inactivo, sin settings, validadores, emails                |
-| `cancel-by-token.use-case.spec.ts`      | 8     | Cancelar CONFIRMED/PENDING, token inválido, sin restaurante, estados no cancelables, emails     |
-| `cancel-reservation.use-case.spec.ts`   | 7     | Cancelar CONFIRMED/PENDING, ya cancelada, rechazada, no existe, forbidden, email                |
-| `confirm-reservation.use-case.spec.ts`  | 7     | Confirmar PENDING, ya confirmada, cancelada, no existe, forbidden, notas con/sin email          |
-| `reject-reservation.use-case.spec.ts`   | 7     | Rechazar PENDING, ya confirmada, ya rechazada, cancelada, no existe, forbidden, motivo          |
-| `get-reservations.use-case.spec.ts`     | 6     | OK propietario, restaurante no existe, forbidden, superadmin libre, lista vacía, filtros        |
-| `reservation-validator.service.spec.ts` | 21    | Grupo (9/10), antelación, horario (día cerrado, hora fuera, último slot), intervalos, capacidad |
+| Archivo                                 | Cobertura                                                                                       |
+|-----------------------------------------|-------------------------------------------------------------------------------------------------|
+| `create-reservation.use-case.spec.ts`   | AUTO/MANUAL, restaurante inexistente/inactivo, sin settings, validadores, emails                |
+| `cancel-by-token.use-case.spec.ts`      | Cancelar CONFIRMED/PENDING, token inválido, sin restaurante, estados no cancelables, emails     |
+| `reservation-validator.service.spec.ts` | Grupo (9/10), antelación, horario (día cerrado, hora fuera, último slot), intervalos, capacidad |
 
 ---
 

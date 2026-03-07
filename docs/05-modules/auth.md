@@ -11,20 +11,18 @@ almacenado en cookie httpOnly.
 auth/
 ├── application/
 │   ├── dtos/
-│   │   └── auth.dto.ts                    # Tipos de entrada/salida de use cases
+│   │   └── auth.dto.ts          # Tipos de entrada/salida del use case
 │   └── use-cases/
-│       ├── login.use-case.ts              # Lógica de autenticación
-│       └── change-password.use-case.ts   # Cambio de contraseña
+│       └── login.use-case.ts     # Lógica de autenticación
 ├── infrastructure/
 │   ├── config/
-│   │   └── jwt.config.ts                  # Configuración del módulo JWT
+│   │   └── jwt.config.ts         # Configuración del módulo JWT
 │   ├── controllers/
 │   │   ├── dtos/
-│   │   │   ├── login.http-dto.ts          # Validación HTTP del body de login
-│   │   │   └── change-password.http-dto.ts # Validación HTTP del cambio de contraseña
-│   │   └── auth.controller.ts             # Endpoints /auth/login, /auth/logout, /auth/change-password
+│   │   │   └── login.http-dto.ts # Validación HTTP del body
+│   │   └── auth.controller.ts    # Endpoints /auth/login y /auth/logout
 │   └── strategies/
-│       └── jwt.strategy.ts               # Estrategia Passport para verificar JWT
+│       └── jwt.strategy.ts       # Estrategia Passport para verificar JWT
 └── auth.module.ts
 ```
 
@@ -115,52 +113,6 @@ request a endpoints protegidos.
 - Idempotente: funciona aunque no haya sesión activa
 - No requiere autenticación
 
-### `PATCH /auth/change-password`
-
-- Protegido con `@Auth(SUPERADMIN, RESTAURANT_ADMIN)`
-- Obtiene el usuario autenticado con `@CurrentUser()`
-- Llama a `ChangePasswordUseCase.execute()`
-- Devuelve `{ message: 'Password changed successfully' }`
-
----
-
-## Use Case: `ChangePasswordUseCase`
-
-Gestiona el cambio de contraseña de un administrador autenticado.
-
-**Input:**
-
-```typescript
-interface ChangePasswordInput {
-    currentUser: User;       // inyectado desde @CurrentUser()
-    currentPassword: string;
-    newPassword: string;
-}
-```
-
-**Flujo:**
-
-1. Valida la fortaleza de `newPassword` con `validatePasswordStrength()`
-   (8 chars, mayús, minus, número, símbolo `!@#$%&*?-_`)
-2. Carga el usuario con `findByEmailWithPassword()` para obtener el hash actual
-3. Compara `currentPassword` con el hash → `BadRequestError` si incorrecto
-4. Verifica que `newPassword !== currentPassword` → `BadRequestError` si son iguales
-5. Hashea la nueva contraseña con `PasswordHasherPort.hash()`
-6. Actualiza `user.passwordHash` y establece `user.mustChangePassword = false`
-7. Persiste con `UserRepositoryPort.save()`
-
-**Errores posibles:**
-
-| Error             | Mensaje                                                |
-|-------------------|--------------------------------------------------------|
-| `BadRequestError` | `Password does not meet requirements: ...`             |
-| `BadRequestError` | `Current password is incorrect`                        |
-| `BadRequestError` | `New password must be different from current password` |
-
-> `validatePasswordStrength` es una función pura en `@shared/domain/utils/`.
-> Si la contraseña no cumple los requisitos, lanza un `BadRequestError`
-> detallando exactamente qué condición no se cumple.
-
 ---
 
 ## Dependencias del módulo
@@ -177,10 +129,9 @@ SharedModule                   // para PasswordHasherPort
 
 ## Tests
 
-| Archivo                            | Tests | Casos cubiertos                                                                                               |
-|------------------------------------|-------|---------------------------------------------------------------------------------------------------------------|
-| `login.use-case.spec.ts`           | 4     | Login OK, usuario inexistente, contraseña errónea, `mustChangePassword`                                       |
-| `change-password.use-case.spec.ts` | 7     | Cambio OK, usuario no existe, contraseña incorrecta, igual a la actual, sin mayúscula, sin símbolo, fortaleza |
+| Archivo                  | Cobertura                                                                     |
+|--------------------------|-------------------------------------------------------------------------------|
+| `login.use-case.spec.ts` | Login correcto, usuario inexistente, contraseña errónea, `mustChangePassword` |
 
 ---
 

@@ -20,12 +20,11 @@ restaurants/
 │   ├── dtos/
 │   │   └── restaurant.dto.ts              # Tipos públicos de entrada/salida
 │   └── use-cases/
-│       ├── get-public-restaurant.use-case.ts   # Detalle por slug (público)
-│       ├── get-restaurants.use-case.ts         # Listado admin por propietario ← H2
+│       ├── get-public-restaurant.use-case.ts   # Detalle por slug
 │       └── list-public-restaurants.use-case.ts # Listado público
 ├── infrastructure/
 │   ├── controllers/
-│   │   └── restaurants.controller.ts      # Todos los endpoints
+│   │   └── restaurants.controller.ts      # GET /restaurants y GET /restaurants/:slug
 │   └── persistence/
 │       ├── restaurant.orm-entity.ts       # Entidad TypeORM
 │       └── restaurant.typeorm.repository.ts
@@ -38,20 +37,20 @@ restaurants/
 
 ```typescript
 class Restaurant {
-    readonly id: string;
-    name: string;
-    readonly adminId: string;
-    phone: string;
-    address: string;
-    readonly category: RestaurantCategory;
-    readonly email: string;
-    imageUrl: string;
-    slug: string;
-    isActive: boolean;
-    readonly createdAt?: Date;
-    readonly updatedAt?: Date;
+  readonly id: string;
+  name: string;
+  readonly adminId: string;
+  phone: string;
+  address: string;
+  readonly category: RestaurantCategory;
+  readonly email: string;
+  imageUrl: string;
+  slug: string;
+  isActive: boolean;
+  readonly createdAt?: Date;
+  readonly updatedAt?: Date;
 
-    static create(params): Restaurant
+  static create(params): Restaurant
 }
 ```
 
@@ -104,37 +103,6 @@ Devuelve el detalle de un restaurante por slug junto con sus settings.
 3. Buscar settings → puede ser `null` (restaurante sin configurar)
 4. Devolver datos combinados
 
-### `GetRestaurantsUseCase` ← H2
-
-Devuelve los restaurantes asociados a un `adminId`. Usado desde el panel de administración.
-
-**Flujo:**
-
-1. Si el usuario es `RESTAURANT_ADMIN` y el `adminId` solicitado no coincide con su `id` → `ForbiddenError`
-2. `findAllByOwnerId(adminId)` → lista completa
-3. Mapear a DTO de respuesta con todos los campos del restaurante
-4. Devolver `{ restaurants, total }`
-
-**Input:**
-
-```typescript
-interface GetRestaurantsInput {
-  currentUser: { id: string; role: UserRole };
-  adminId: string;
-}
-```
-
-**Output:**
-
-```typescript
-interface GetRestaurantsResult {
-  restaurants: RestaurantItem[];
-  total: number;
-}
-```
-
-> Un `SUPERADMIN` puede consultar los restaurantes de cualquier `adminId` sin restricción.
-
 ---
 
 ## Enum: `RestaurantCategory`
@@ -166,7 +134,6 @@ exports: [RestaurantRepositoryPort]
 |--------------------------------------------|--------------------------------------------------------------------------------------------|
 | `get-public-restaurant.use-case.spec.ts`   | Detalle OK, settings null, restaurante inexistente, restaurante inactivo, campos completos |
 | `list-public-restaurants.use-case.spec.ts` | Listado solo activos, conteo correcto                                                      |
-| `get-restaurants.use-case.spec.ts`         | OK propietario, lista vacía, forbidden otro admin, superadmin libre, mapeo campos          |
 
 ---
 

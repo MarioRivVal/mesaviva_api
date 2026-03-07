@@ -1,10 +1,7 @@
 import { RestaurantCategory } from '@modules/restaurants/domain/enums/restaurant-category.enum';
 import { PublicSettingsResult } from '@modules/settings/application/dtos/settings.dto';
-import { User } from '@modules/users/domain/entities/user.entity';
 
-// ─── Base compartida ──────────────────────────────────────────────────────────
-
-interface RestaurantBase {
+export interface PublicRestaurantListItem {
   id: string;
   name: string;
   slug: string;
@@ -13,38 +10,19 @@ interface RestaurantBase {
   imageUrl: string;
 }
 
-// ─── Tipo genérico paginado ───────────────────────────────────────────────────
-
-interface PaginatedResult<T> {
-  restaurants: T[];
+export interface PublicRestaurantListResult {
+  restaurants: PublicRestaurantListItem[];
   total: number;
 }
 
-// ─── DTOs públicos ────────────────────────────────────────────────────────────
-
-export type PublicRestaurantListItem = RestaurantBase;
-
-export type PublicRestaurantListResult =
-  PaginatedResult<PublicRestaurantListItem>;
-
-export interface PublicRestaurantDetail extends RestaurantBase {
+export interface PublicRestaurantDetail {
+  id: string;
+  name: string;
+  slug: string;
+  category: RestaurantCategory;
+  address: string;
   email: string;
   phone: string;
+  imageUrl: string;
   settings: PublicSettingsResult | null;
 }
-
-// ─── DTOs admin ───────────────────────────────────────────────────────────────
-
-export interface GetRestaurantsInput {
-  currentUser: User;
-  adminId: string;
-}
-
-export interface RestaurantItem extends RestaurantBase {
-  adminId: string;
-  phone: string;
-  email: string;
-  isActive: boolean;
-}
-
-export type GetRestaurantsResult = PaginatedResult<RestaurantItem>;

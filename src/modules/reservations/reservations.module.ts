@@ -15,7 +15,6 @@ import { GetReservationsUseCase } from '@modules/reservations/application/use-ca
 import { ConfirmReservationUseCase } from '@modules/reservations/application/use-cases/confirm-reservation.use-case';
 import { RejectReservationUseCase } from '@modules/reservations/application/use-cases/reject-reservation.use-case';
 import { ReservationAccessService } from '@modules/reservations/application/services/reservation-access.service';
-import { GetReservationUseCase } from '@modules/reservations/application/use-cases/get-reservation.use-case';
 
 @Module({
   imports: [
@@ -35,7 +34,6 @@ import { GetReservationUseCase } from '@modules/reservations/application/use-cas
     CancelByTokenUseCase,
     CancelReservationUseCase,
     GetReservationsUseCase,
-    GetReservationUseCase,
     ConfirmReservationUseCase,
     RejectReservationUseCase,
   ],

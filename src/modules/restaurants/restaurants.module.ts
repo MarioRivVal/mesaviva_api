@@ -7,7 +7,6 @@ import { SettingsModule } from '@modules/settings/settings.module';
 import { ListPublicRestaurantsUseCase } from '@modules/restaurants/application/use-cases/list-public-restaurants.use-case';
 import { GetPublicRestaurantUseCase } from '@modules/restaurants/application/use-cases/get-public-restaurant.use-case';
 import { RestaurantsController } from '@modules/restaurants/infrastructure/controllers/restaurants.controller';
-import { GetRestaurantsUseCase } from '@modules/restaurants/application/use-cases/get-restaurants.use-case';
 
 @Module({
   imports: [
@@ -21,7 +20,6 @@ import { GetRestaurantsUseCase } from '@modules/restaurants/application/use-case
     },
     ListPublicRestaurantsUseCase,
     GetPublicRestaurantUseCase,
-    GetRestaurantsUseCase,
   ],
   controllers: [RestaurantsController],
   exports: [RestaurantRepositoryPort],

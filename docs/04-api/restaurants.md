@@ -8,12 +8,10 @@ Módulo responsable de la gestión de restaurantes de la plataforma.
 
 ## Endpoints
 
-| Método | Ruta                          | Descripción                           | Auth                            |
-|--------|-------------------------------|---------------------------------------|---------------------------------|
-| `GET`  | `/restaurants`                | Listar restaurantes activos (público) | ❌ Público                       |
-| `GET`  | `/restaurants/mine`           | Mis restaurantes (RESTAURANT_ADMIN)   | `RESTAURANT_ADMIN`              |
-| `GET`  | `/restaurants/owner/:adminId` | Restaurantes de un admin              | `SUPERADMIN` `RESTAURANT_ADMIN` |
-| `GET`  | `/restaurants/:slug`          | Obtener detalle de un restaurante     | ❌ Público                       |
+| Método | Ruta                 | Descripción                           | Auth      |
+|--------|----------------------|---------------------------------------|-----------|
+| `GET`  | `/restaurants`       | Listar restaurantes activos (público) | ❌ Público |
+| `GET`  | `/restaurants/:slug` | Obtener detalle de un restaurante     | ❌ Público |
 
 ---
 
@@ -59,83 +57,6 @@ No requiere autenticación ni parámetros.
 
 ---
 
-## GET `/restaurants/mine`
-
-Devuelve los restaurantes propios del `RESTAURANT_ADMIN` autenticado.
-Equivale a `GET /restaurants/owner/:adminId` con el `id` del usuario en sesión.
-
-### Request
-
-Requiere autenticación como `RESTAURANT_ADMIN`.
-
-```
-GET /api/v1/restaurants/mine
-Cookie: auth_token=<jwt>
-```
-
-### Respuestas
-
-**✅ 200 OK**
-
-```json
-{
-  "restaurants": [
-    {
-      "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
-      "name": "El Rincón Asturiano",
-      "slug": "el-rincon-asturiano",
-      "adminId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-      "phone": "985123456",
-      "address": "Calle Mayor 1, Oviedo",
-      "category": "RESTAURANT",
-      "email": "info@rinconasturiano.com",
-      "imageUrl": "https://res.cloudinary.com/mesaviva/...",
-      "isActive": true
-    }
-  ],
-  "total": 1
-}
-```
-
-**❌ 401 Unauthorized** — No autenticado
-
----
-
-## GET `/restaurants/owner/:adminId`
-
-Devuelve los restaurantes asociados a un administrador concreto.
-Un `RESTAURANT_ADMIN` solo puede ver sus propios restaurantes;
-un `SUPERADMIN` puede ver los de cualquier admin.
-
-### Request
-
-**Path params:**
-
-| Parámetro | Tipo   | Descripción          |
-|-----------|--------|----------------------|
-| `adminId` | `UUID` | ID del administrador |
-
-```
-GET /api/v1/restaurants/owner/a1b2c3d4-e5f6-7890-abcd-ef1234567890
-Cookie: auth_token=<jwt>
-```
-
-### Respuestas
-
-**✅ 200 OK** — Mismo formato que `GET /restaurants/mine`
-
-**❌ 403 Forbidden** — Un `RESTAURANT_ADMIN` intentando ver restaurantes de otro admin
-
-```json
-{
-  "statusCode": 403,
-  "error": "Forbidden",
-  "message": "You can only view your own restaurants"
-}
-```
-
----
-
 ## GET `/restaurants/:slug`
 
 Devuelve el detalle completo de un restaurante junto con su configuración operativa.
@@ -176,51 +97,17 @@ GET /api/v1/restaurants/el-rincon-asturiano
     "openingHours": {
       "monday": [],
       "tuesday": [],
-      "wednesday": [
-        {
-          "open": "13:00",
-          "close": "16:00",
-          "capacity": 40
-        }
-      ],
-      "thursday": [
-        {
-          "open": "13:00",
-          "close": "16:00",
-          "capacity": 40
-        }
-      ],
+      "wednesday": [{ "open": "13:00", "close": "16:00", "capacity": 40 }],
+      "thursday": [{ "open": "13:00", "close": "16:00", "capacity": 40 }],
       "friday": [
-        {
-          "open": "13:00",
-          "close": "16:00",
-          "capacity": 40
-        },
-        {
-          "open": "20:00",
-          "close": "23:00",
-          "capacity": 50
-        }
+        { "open": "13:00", "close": "16:00", "capacity": 40 },
+        { "open": "20:00", "close": "23:00", "capacity": 50 }
       ],
       "saturday": [
-        {
-          "open": "13:00",
-          "close": "16:30",
-          "capacity": 50
-        },
-        {
-          "open": "20:00",
-          "close": "23:30",
-          "capacity": 50
-        }
+        { "open": "13:00", "close": "16:30", "capacity": 50 },
+        { "open": "20:00", "close": "23:30", "capacity": 50 }
       ],
-      "sunday": [
-        {
-          "open": "13:00",
-          "close": "16:30",
-          "capacity": 50
-        }
-      ]
+      "sunday": [{ "open": "13:00", "close": "16:30", "capacity": 50 }]
     },
     "timeSlotInterval": 30,
     "depositAmount": 10,
@@ -327,6 +214,7 @@ al momento de su creación. Si existe colisión se añade sufijo:
 
 | Método  | Ruta                      | Descripción                      | Auth                            |
 |---------|---------------------------|----------------------------------|---------------------------------|
+| `GET`   | `/restaurants/mine`       | Ver mis restaurantes             | `RESTAURANT_ADMIN`              |
 | `PATCH` | `/restaurants/:id`        | Actualizar datos del restaurante | `RESTAURANT_ADMIN` `SUPERADMIN` |
 | `PATCH` | `/restaurants/:id/status` | Activar / desactivar restaurante | `SUPERADMIN`                    |
 

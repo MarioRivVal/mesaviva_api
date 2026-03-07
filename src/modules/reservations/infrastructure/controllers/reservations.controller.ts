@@ -11,7 +11,6 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { Throttle } from '@nestjs/throttler';
 import { Auth } from '@shared/infrastructure/decorators/auth.decorator';
 import { CurrentUser } from '@shared/infrastructure/decorators/current-user.decorator';
 import { UserRole } from '@modules/users/domain/enums/user-role.enum';
@@ -25,7 +24,6 @@ import { RejectReservationUseCase } from '../../application/use-cases/reject-res
 import { CreateReservationHttpDto } from './dtos/create-reservation.http-dto';
 import { RejectReservationHttpDto } from './dtos/reject-reservation.http-dto';
 import { GetReservationsQueryDto } from './dtos/get-reservations-query.http-dto';
-import { GetReservationUseCase } from '@modules/reservations/application/use-cases/get-reservation.use-case';
 
 @Controller('reservations')
 export class ReservationsController {
@@ -34,7 +32,6 @@ export class ReservationsController {
     private readonly cancelByTokenUseCase: CancelByTokenUseCase,
     private readonly cancelReservationUseCase: CancelReservationUseCase,
     private readonly getReservationsUseCase: GetReservationsUseCase,
-    private readonly getReservationUseCase: GetReservationUseCase,
     private readonly confirmReservationUseCase: ConfirmReservationUseCase,
     private readonly rejectReservationUseCase: RejectReservationUseCase,
   ) {}
@@ -49,7 +46,6 @@ export class ReservationsController {
 
   @Delete('cancel/:token')
   @HttpCode(HttpStatus.OK)
-  @Throttle({ default: { limit: 10, ttl: 60000 } })
   async cancelByToken(@Param('token') token: string) {
     return this.cancelByTokenUseCase.execute({ token });
   }
@@ -71,19 +67,6 @@ export class ReservationsController {
         startDate: query.startDate,
         endDate: query.endDate,
       },
-    });
-  }
-
-  @Get(':id')
-  @HttpCode(HttpStatus.OK)
-  @Auth(UserRole.SUPERADMIN, UserRole.RESTAURANT_ADMIN)
-  async getReservation(
-    @Param('id', ParseUUIDPipe) id: string,
-    @CurrentUser() user: User,
-  ) {
-    return this.getReservationUseCase.execute({
-      reservationId: id,
-      currentUser: user,
     });
   }
 

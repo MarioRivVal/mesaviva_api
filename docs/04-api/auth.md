@@ -9,11 +9,10 @@ Módulo responsable de la autenticación de administradores mediante
 
 ## Endpoints
 
-| Método  | Ruta                    | Descripción                       | Auth                            |
-|---------|-------------------------|-----------------------------------|---------------------------------|
-| `POST`  | `/auth/login`           | Iniciar sesión                    | ❌ Público                       |
-| `POST`  | `/auth/logout`          | Cerrar sesión                     | ❌ Público                       |
-| `PATCH` | `/auth/change-password` | Cambiar contraseña (primer login) | `RESTAURANT_ADMIN` `SUPERADMIN` |
+| Método | Ruta           | Descripción    | Auth      |
+|--------|----------------|----------------|-----------|
+| `POST` | `/auth/login`  | Iniciar sesión | ❌ Público |
+| `POST` | `/auth/logout` | Cerrar sesión  | ❌ Público |
 
 ---
 
@@ -157,111 +156,6 @@ Set-Cookie: auth_token=;
           HttpOnly; 
           SameSite=Strict; 
           Max-Age=0
-```
-
----
-
-## PATCH `/auth/change-password`
-
-Permite a un administrador cambiar su contraseña. Es obligatorio
-completar este paso cuando `mustChangePassword: true` (primer login
-con contraseña temporal).
-
-El sistema valida también que la nueva contraseña cumpla los requisitos
-de fortaleza y que sea diferente a la actual.
-
-### Auth requerida
-
-```
-@Auth(UserRole.SUPERADMIN, UserRole.RESTAURANT_ADMIN)
-Cookie: auth_token=<jwt>
-```
-
-### Request
-
-**Headers:**
-
-```
-Content-Type: application/json
-Cookie: auth_token=<jwt>
-```
-
-**Body:**
-
-```json
-{
-  "currentPassword": "TempPassword123!",
-  "newPassword": "MiNuevaContraseña2026!"
-}
-```
-
-**Validaciones:**
-
-| Campo             | Tipo     | Reglas                                                                           |
-|-------------------|----------|----------------------------------------------------------------------------------|
-| `currentPassword` | `string` | Requerido                                                                        |
-| `newPassword`     | `string` | Mínimo 8 chars, ≥1 mayúscula, ≥1 minúscula, ≥1 número, ≥1 símbolo (`!@#$%&*?-_`) |
-
-### Respuestas
-
-**✅ 200 OK — Contraseña actualizada**
-
-```json
-{
-  "message": "Password changed successfully"
-}
-```
-
-Tras el cambio exitoso, `mustChangePassword` se establece a `false`.
-
-**❌ 400 Bad Request — Contraseña actual incorrecta**
-
-```json
-{
-  "statusCode": 400,
-  "error": "BadRequestError",
-  "message": "Current password is incorrect",
-  "timestamp": "2026-02-25T10:00:00.000Z",
-  "path": "/api/v1/auth/change-password"
-}
-```
-
-**❌ 400 Bad Request — Nueva contraseña igual a la actual**
-
-```json
-{
-  "statusCode": 400,
-  "error": "BadRequestError",
-  "message": "New password must be different from current password",
-  "timestamp": "2026-02-25T10:00:00.000Z",
-  "path": "/api/v1/auth/change-password"
-}
-```
-
-**❌ 400 Bad Request — Contraseña no cumple requisitos de fortaleza**
-
-```json
-{
-  "statusCode": 400,
-  "error": "BadRequestError",
-  "message": "Password does not meet requirements: at least one uppercase letter, at least one symbol (!@#$%&*?-_)",
-  "timestamp": "2026-02-25T10:00:00.000Z",
-  "path": "/api/v1/auth/change-password"
-}
-```
-
-### Flujo interno
-
-```
-1. Verificar JWT + usuario activo
-2. Validar fortaleza de newPassword (8 chars, mayús, minus, número, símbolo)
-3. Cargar usuario con passwordHash (findByEmailWithPassword)
-4. Comparar currentPassword con hash almacenado → 400 si incorrecto
-5. Verificar que newPassword !== currentPassword → 400 si son iguales
-6. Hashear newPassword con bcrypt
-7. Actualizar passwordHash y mustChangePassword = false
-8. Persistir cambios
-9. Devolver confirmación
 ```
 
 ---
